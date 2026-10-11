@@ -39,7 +39,14 @@ class PxlwSoftirisWrapper {
 
   bool HasSoftIris();
 
-  int InitPrimaryDisplay(int32_t vsync_period_ns, uint32_t width, uint32_t height);
+  void InitPrimaryDisplay(int32_t vsync_period_ns, uint32_t width, uint32_t height);
+
+  // out_brightness receives panel brightness from the service.
+  // out_unknown receives an optional service value whose meaning is not yet established.
+  // Stock soft-iris leaves out_unused unused; its role in other Iris wrappers is unknown.
+  void BeforeCommitLayerStack(int display_id, int display_type, int &out_brightness,
+                              int &out_unknown, int &out_unused);
+
   void SetColorModeWithRenderIntent(
       int32_t display_id, int32_t display_type,
       android::hardware::graphics::common::V1_2::ColorMode color_mode,
