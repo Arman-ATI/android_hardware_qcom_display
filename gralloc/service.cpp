@@ -38,6 +38,7 @@
 
 #include <string>
 
+#include "QtiAllocator.h"
 #include "QtiAllocatorAIDL.h"
 
 using android::hardware::configureRpcThreadpool;
@@ -68,6 +69,13 @@ int main(int, char **) {
     return EXIT_FAILURE;
   }
   ALOGI("Initialized QTI Allocator AIDL");
+
+  configureRpcThreadpool(4, false /*callerWillJoin*/);
+  android::sp<vendor::qti::hardware::display::allocator::V4_0::IQtiAllocator> hidl_allocator =
+      new vendor::qti::hardware::display::allocator::V4_0::implementation::QtiAllocator(allocator);
+  if (hidl_allocator->registerAsService() != android::OK) {
+    ALOGW("Failed to register QTI Allocator HIDL as a service");
+  }
 
   ABinderProcess_setThreadPoolMaxThreadCount(4);
   ABinderProcess_startThreadPool();

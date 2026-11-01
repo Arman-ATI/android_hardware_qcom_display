@@ -278,6 +278,8 @@ cc_binary {
     shared_libs: [
         "libbinder",
         "libbinder_ndk",
+        "android.hardware.graphics.allocator@4.0",
+        "vendor.qti.hardware.display.allocator@4.0",
         "libhidlbase",
         "libgrallocutils",
         "libmapperutils",
@@ -307,6 +309,7 @@ cc_binary {
         "-D__QTI_DISPLAY_GRALLOC__",
     ],
     srcs: [
+        "QtiAllocator.cpp",
         "QtiAllocatorAIDL.cpp",
         "service.cpp",
     ],
