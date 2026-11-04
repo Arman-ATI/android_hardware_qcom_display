@@ -46,6 +46,14 @@
 #include <vector>
 
 #include "hwc_display.h"
+
+#ifdef OPLUS_FINGERPRINT_MASK
+#include <UdfpsExtension.h>
+#ifdef UDFPS_TOUCHED_LAYER_NAME
+#undef UDFPS_TOUCHED_LAYER_NAME
+#define UDFPS_TOUCHED_LAYER_NAME "SurfaceView[UdfpsControllerOverlay]"
+#endif
+#endif
 #include "hwc_debugger.h"
 #include "hwc_tonemapper.h"
 #include "hwc_session.h"
@@ -724,6 +732,17 @@ void HWCDisplay::BuildLayerStack() {
     } else {
       layer->flags.fod_pressed = false;
       layer_stack_.flags.fod_pressed_present = false;
+    }
+#endif
+
+#ifdef OPLUS_FINGERPRINT_MASK
+    // Match on the full stack, as SDM may compose these layers on the GPU and drop
+    // them from the layers it programs on the hardware.
+    const std::string &name = hwc_layer->GetName();
+    if (name.find(UDFPS_DIM_LAYER_NAME) != std::string::npos) {
+      layer_stack_.flags.ofp_dim_layer_present = true;
+    } else if (name.find(UDFPS_TOUCHED_LAYER_NAME) != std::string::npos) {
+      layer_stack_.flags.ofp_fingerpress_layer_present = true;
     }
 #endif
 
