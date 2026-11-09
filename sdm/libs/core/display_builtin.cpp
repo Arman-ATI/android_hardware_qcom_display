@@ -51,7 +51,7 @@
 #include <vendor/pixelworks/hardware/display/VendorConfig.h>
 #include <vendor/pixelworks/hardware/display/1.0/IIris.h>
 
-using vendor::pixelworks::hardware::display::IVendorConfig;
+using vendor::pixelworks::hardware::display::VendorConfig;
 using vendor::pixelworks::hardware::display::V1_0::IIris;
 #endif
 
@@ -118,7 +118,8 @@ DisplayError DisplayBuiltIn::Init() {
           ",\"type\":" + std::to_string(static_cast<int>(display_type_)) +
           ",\"primary\":" + std::to_string(hw_panel_info_.is_primary_panel ? 1 : 0) +
           ",\"name\":\"" + panel_name + "\"}";
-      iris_service->irisConfigureBatch(IVendorConfig::SET_PANEL_INFO, panel_info,
+      iris_service->irisConfigureBatch(
+          static_cast<int32_t>(VendorConfig::SET_PANEL_INFO), panel_info,
                                        [](int32_t, const android::hardware::hidl_string &) {});
     }
   }
