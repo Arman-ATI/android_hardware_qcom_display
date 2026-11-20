@@ -310,6 +310,37 @@ void HWCSession::GetCapabilities(struct hwc2_device *device, uint32_t *outCount,
   *outCount = count;
 }
 
+int32_t HWCSession::GetDisplayCapabilities(hwc2_device_t *device, hwc2_display_t display,
+                                           uint32_t *out_num_capabilities,
+                                           uint32_t *out_capabilities) {
+  if (!device || !out_num_capabilities) {
+    return HWC2_ERROR_BAD_PARAMETER;
+  }
+
+  if (display >= HWC_NUM_DISPLAY_TYPES) {
+    return HWC2_ERROR_BAD_DISPLAY;
+  }
+
+  HWCSession *hwc_session = static_cast<HWCSession *>(device);
+  if (!hwc_session->hwc_display_[display]) {
+    return HWC2_ERROR_BAD_DISPLAY;
+  }
+
+  const uint32_t count = (display == HWC_DISPLAY_PRIMARY) ? 1 : 0;
+  const uint32_t caps[] = {HWC2_DISPLAY_CAPABILITY_DOZE};
+
+  if (out_capabilities != nullptr) {
+    if (*out_num_capabilities < count) {
+      return HWC2_ERROR_BAD_PARAMETER;
+    }
+    for (uint32_t i = 0; i < count; i++) {
+      out_capabilities[i] = caps[i];
+    }
+  }
+  *out_num_capabilities = count;
+  return HWC2_ERROR_NONE;
+}
+
 template <typename PFN, typename T>
 static hwc2_function_pointer_t AsFP(T function) {
   static_assert(std::is_same<PFN, T>::value, "Incompatible function pointer");
@@ -798,6 +829,8 @@ hwc2_function_pointer_t HWCSession::GetFunction(struct hwc2_device *device,
       return AsFP<HWC2_PFN_GET_COLOR_MODES>(GetColorModes);
     case HWC2::FunctionDescriptor::GetDisplayAttribute:
       return AsFP<HWC2_PFN_GET_DISPLAY_ATTRIBUTE>(GetDisplayAttribute);
+    case HWC2::FunctionDescriptor::GetDisplayCapabilities:
+      return AsFP<HWC2_PFN_GET_DISPLAY_CAPABILITIES>(HWCSession::GetDisplayCapabilities);
     case HWC2::FunctionDescriptor::GetDisplayConfigs:
       return AsFP<HWC2_PFN_GET_DISPLAY_CONFIGS>(GetDisplayConfigs);
     case HWC2::FunctionDescriptor::GetDisplayName:

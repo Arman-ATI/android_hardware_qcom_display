@@ -202,6 +202,9 @@ class HWCSession : hwc2_device_t, HWCUEventListener, public qClient::BnQClient,
   static int Close(hw_device_t *device);
   static void GetCapabilities(struct hwc2_device *device, uint32_t *outCount,
                               int32_t *outCapabilities);
+  static int32_t GetDisplayCapabilities(hwc2_device_t *device, hwc2_display_t display,
+                                        uint32_t *out_num_capabilities,
+                                        uint32_t *out_capabilities);
   static hwc2_function_pointer_t GetFunction(struct hwc2_device *device, int32_t descriptor);
 
   // Uevent handler
