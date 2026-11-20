@@ -759,6 +759,15 @@ static int32_t SetVsyncEnabled(hwc2_device_t *device, hwc2_display_t display, in
   return HWCSession::CallDisplayFunction(device, display, &HWCDisplay::SetVsyncEnabled, enabled);
 }
 
+typedef int32_t (*SdmPfnSetDisplayBrightness)(hwc2_device_t *device, hwc2_display_t display,
+                                              float brightness);
+
+static int32_t SetDisplayBrightness(hwc2_device_t *device, hwc2_display_t display,
+                                    float brightness) {
+  return HWCSession::CallDisplayFunction(device, display, &HWCDisplay::SetDisplayBrightness,
+                                         brightness);
+}
+
 int32_t HWCSession::ValidateDisplay(hwc2_device_t *device, hwc2_display_t display,
                                     uint32_t *out_num_types, uint32_t *out_num_requests) {
   DTRACE_SCOPED();
@@ -861,6 +870,8 @@ hwc2_function_pointer_t HWCSession::GetFunction(struct hwc2_device *device,
       return AsFP<HWC2_PFN_SET_COLOR_TRANSFORM>(SetColorTransform);
     case HWC2::FunctionDescriptor::SetCursorPosition:
       return AsFP<HWC2_PFN_SET_CURSOR_POSITION>(SetCursorPosition);
+    case HWC2::FunctionDescriptor::SetDisplayBrightness:
+      return AsFP<SdmPfnSetDisplayBrightness>(SetDisplayBrightness);
     case HWC2::FunctionDescriptor::SetLayerBlendMode:
       return AsFP<HWC2_PFN_SET_LAYER_BLEND_MODE>(SetLayerBlendMode);
     case HWC2::FunctionDescriptor::SetLayerBuffer:

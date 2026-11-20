@@ -1799,6 +1799,26 @@ int HWCDisplay::GetPanelBrightness(int *level) {
   return display_intf_->GetPanelBrightness(level);
 }
 
+HWC2::Error HWCDisplay::SetDisplayBrightness(float brightness) {
+  if (!display_intf_) {
+    return HWC2::Error::BadDisplay;
+  }
+
+  int level = 0;
+  if (brightness == -1.0f) {
+    level = 0;
+  } else if (brightness >= 0.0f && brightness <= 1.0f) {
+    level = static_cast<int>(brightness * 255.0f + 0.5f);
+    if (level < 1) {
+      level = 1;
+    }
+  } else {
+    return HWC2::Error::BadParameter;
+  }
+
+  return (SetPanelBrightness(level) == 0) ? HWC2::Error::None : HWC2::Error::Unsupported;
+}
+
 int HWCDisplay::ToggleScreenUpdates(bool enable) {
   display_paused_ = enable ? false : true;
   callbacks_->Refresh(HWC_DISPLAY_PRIMARY);
